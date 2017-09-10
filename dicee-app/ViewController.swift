@@ -24,7 +24,6 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupSound()
         updateDiceImages()
     }
 
@@ -34,13 +33,20 @@ class ViewController: UIViewController {
     }
 
     @IBAction func rollButtonPressed(_ sender: UIButton) {
+        
         updateDiceImages()
+        // Setup Sound
+        if let soundURL = Bundle.main.url(forResource: "roll", withExtension: "wav"){
+            var mySound: SystemSoundID = 0
+            AudioServicesCreateSystemSoundID(soundURL as CFURL, &mySound)
+            // Play Sound
+            AudioServicesPlaySystemSound(mySound)
+        }
+        
     }
     
     func updateDiceImages(){
-        
-        rollSound.play()
-        
+    
         randomDiceIndex1 = Int(arc4random_uniform(6))
         randomDiceIndex2 = Int(arc4random_uniform(6))
         
@@ -49,16 +55,6 @@ class ViewController: UIViewController {
         
     }
     
-    func setupSound(){
-        let musicFile = Bundle.main.path(forResource: "roll", ofType: ".wav")!
-        let url = URL(fileURLWithPath: musicFile)
-        do {
-            rollSound = try AVAudioPlayer(contentsOf: url)
-            rollSound.prepareToPlay()
-        } catch let error as NSError {
-            print(error.description)
-        }
-    }
     
     override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
         updateDiceImages()
